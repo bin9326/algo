@@ -1,0 +1,100 @@
+#Implement the Adagrad method with application, RMSprop and Adadelta.
+
+Adadelta
+
+julia> mutable struct Adadelta <: DescentMethod
+
+       γs # gradient decay
+
+       γx # update decay
+
+       ϵ # small value
+
+       s # sum of squared gradients
+
+       u # sum of squared updates
+
+       end
+
+julia> function init!(M::Adadelta, f, df, x)
+
+       M.s = zeros(length(x))
+
+       M.u = zeros(length(x))
+
+       return M
+
+       end
+
+init! (generic function with 3 methods)
+
+julia> function step!(M::Adadelta, f, df, x)
+
+       γs, γx, ϵ, s, u, g = M.γs, M.γx, M.ϵ, M.s, M.u, df(x)
+
+       #s[:] = γs*s + (1-γs)*g.*g
+
+       s = γs*s + (1-γs)*g.*g
+
+       Δx = - (sqrt.(u) .+ ϵ) ./ (sqrt.(s) .+ ϵ) .* g
+
+       #u[:] = γx*u + (1-γx)*Δx.*Δx
+
+       u = γx*u + (1-γx)*Δx.*Δx
+
+       return x + Δx
+
+       end
+
+step! (generic function with 2 methods)
+
+
+
+
+RMSprop
+
+julia> mutable struct RMSProp <: DescentMethod
+
+       α # learning rate
+
+       γ # decay
+
+       ϵ # small value
+
+       s # sum of squared gradient
+
+       end
+
+
+
+julia> function init!(M::RMSProp, f, df, x)
+
+       M.s = zeros(length(x))
+
+       return M
+
+       end
+
+init! (generic function with 4 methods)
+
+
+
+julia> function step!(M::RMSProp, f, df, x)
+
+       α, γ, ϵ, s, g = M.α, M.γ, M.ϵ, M.s, df(x)
+
+       #s[:] = γ*s + (1-γ)*(g.*g)
+
+       s = γ*s + (1-γ)*(g*g)
+
+       return x - α*g ./ (sqrt.(s) .+ ϵ)
+
+       end
+
+step! (generic function with 3 methods)
+
+julia> using Flux
+
+julia> f(x) = 4x^2 + 3x + 2;
+
+julia> df(x) = gradient(f, x)[1];

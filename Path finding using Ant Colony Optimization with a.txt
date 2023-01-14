@@ -1,0 +1,45 @@
+#Path finding using Ant Colony Optimization with an application. 
+
+julia> using AntColony
+
+julia> distance_matrix = rand(5, 5)
+
+5×5 Matrix{Float64}:
+
+ 0.715935  0.149451   0.749837  0.9459     0.447878
+
+ 0.111977  0.576916   0.371659  0.740428   0.562289
+
+ 0.128413  0.174388   0.641156  0.0374084  0.652572
+
+ 0.904834  0.955436   0.27033   0.21699    0.643411
+
+ 0.45085   0.0927914  0.956649  0.344325   0.86642
+
+julia> aco(distance_matrix, is_tour = true)
+
+5-element Vector{Int64}:
+
+ 3
+
+ 4
+
+ 5
+
+ 1
+
+ 2
+
+julia> aco(distance_matrix, start_node = 1, end_node = 5)
+
+5-element Vector{Int64}:
+
+ 1
+
+ 3
+
+ 4
+
+ 2
+
+ 5

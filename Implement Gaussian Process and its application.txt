@@ -1,0 +1,186 @@
+#Implement Gaussian Process and its application.
+
+julia> using GaussianProcesses
+
+julia> using Random
+
+julia> Random.seed!(20140430)
+
+TaskLocalRNG()
+
+julia> # Training data
+
+julia> n=10;                      #number of training points
+
+julia> x = 2π * rand(n);              #predictors
+
+julia> y = sin.(x) + 0.05*randn(n);   #regressors\
+
+julia> #Select mean and covariance function
+
+julia> mZero = MeanZero()             #Zero mean function
+
+Type: MeanZero, Params: Float64[]
+
+julia> kern = SE(0.0,0.0)             #Sqaured exponential kernel
+
+Type: SEIso{Float64}, Params: [0.0, 0.0]
+
+julia> ^C
+
+julia> logObsNoise = -1.0
+
+-1.0
+
+julia> gp = GP(x,y,mZero,kern,logObsNoise)
+
+GP Exact object:
+
+  Dim = 1
+
+  Number of observations = 10
+
+  Mean function:
+
+    Type: MeanZero, Params: Float64[]
+
+  Kernel:
+
+    Type: SEIso{Float64}, Params: [0.0, 0.0]
+
+  Input observations =
+
+[2.3008941978115995 4.177929157381414 … 2.015277043100713 4.730977535989725]
+
+  Output observations = [0.7710763105152831, -0.8391332919835048, -0.10379941216625867, 0.8742717770868422, -0.5504286710256119, -0.6641636221208442, -0.3429297010103842, 0.6259817552095643, 0.9198567208087357, -0.883006046800485]
+
+
+
+  Variance of observation noise = 0.1353352832366127
+
+  Marginal Log-Likelihood = -6.681
+
+julia> x = 0:0.1:2π
+
+0.0:0.1:6.2
+
+julia> using Plots
+
+julia> plot(gp; obsv=false)
+
+
+
+
+
+
+
+julia> optimize!(gp)
+
+ * Status: success
+
+ * Candidate solution
+
+    Final objective value:     -5.314356e+00
+
+ * Found with
+
+    Algorithm:     L-BFGS
+
+ * Convergence measures
+
+    |x - x'|               = 2.82e-01 ≰ 0.0e+00
+
+    |x - x'|/|x'|          = 1.03e-02 ≰ 0.0e+00
+
+    |f(x) - f(x')|         = 1.09e-11 ≰ 0.0e+00
+
+    |f(x) - f(x')|/|f(x')| = 2.06e-12 ≰ 0.0e+00
+
+    |g(x)|                 = 3.62e-09 ≤ 1.0e-08
+
+
+
+ * Work counters
+
+    Seconds run:   0  (vs limit Inf)
+
+    Iterations:    53
+
+    f(x) calls:    163
+
+    ∇f(x) calls:   163
+
+julia> plot(gp; obsv=false, label="GP posterior mean", fmt=:png)
+
+
+
+julia> samples = rand(gp, x, 5)
+
+63×5 Matrix{Float64}:
+
+  0.296719    0.677213   0.000327887   0.161458    0.173664
+
+  0.302538    0.600895   0.0884157     0.207963    0.199439
+
+  0.32306     0.546795   0.176393      0.260986    0.241026
+
+  0.358505    0.516865   0.264596      0.321148    0.29713
+
+  0.408063    0.511414   0.353272      0.388301    0.365738
+
+  0.470004    0.52912    0.442412      0.4616      0.44441
+
+  0.541683    0.567107   0.531441      0.539433    0.530027
+
+  0.619756    0.621248   0.619241      0.619716    0.61904
+
+  0.700435    0.686479   0.704234      0.699851    0.707638
+
+  0.7797      0.75731    0.784356      0.777123    0.792027
+
+  0.85373     0.828256   0.857326      0.848658    0.868584
+
+  0.919007    0.894243   0.920839      0.911842    0.934296
+
+
+
+  0.972693    0.951058   0.972835      0.96436     0.986807
+
+  ⋮
+
+ -0.866424   -0.864705  -0.871592     -0.873943   -0.877832
+
+ -0.84811    -0.845412  -0.855057     -0.857972   -0.862173
+
+ -0.819735   -0.816091  -0.827976     -0.831093   -0.835064
+
+ -0.779384   -0.77522   -0.78802      -0.790855   -0.794133
+
+ -0.72586    -0.721887  -0.733562     -0.735645   -0.737916
+
+ -0.658663   -0.655821  -0.663883     -0.665073   -0.666191
+
+ -0.578224   -0.577411  -0.579588     -0.579836   -0.580042
+
+ -0.485697   -0.487552  -0.4826       -0.482166   -0.481889
+
+ -0.383247   -0.38742   -0.376222     -0.37567    -0.375265
+
+ -0.273359   -0.278391  -0.265037     -0.264726   -0.264605
+
+ -0.159109   -0.16185   -0.154584     -0.154625   -0.154696
+
+ -0.0435037  -0.039035  -0.0510279    -0.0506873  -0.0502527
+
+julia> plot!(x, samples)
+
+
+
+
+
+
+
+
+
+
+

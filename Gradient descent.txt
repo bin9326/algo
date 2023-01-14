@@ -1,0 +1,39 @@
+# Implement Gradient descent
+
+julia> abstract type DescentMethod end
+
+julia> struct GradientDescent <: DescentMethod
+
+       α
+
+       end
+
+julia> init!(M::GradientDescent, f, ∇f, x) = M
+
+init! (generic function with 1 method)
+
+julia> function Gradient(M::GradientDescent, f, ∇f, x)
+
+       α, g = M.α, ∇f(x)
+
+       return x - α*g
+
+       end
+
+Gradient (generic function with 1 method)
+
+julia> ∇f(x)=4*x
+
+∇f (generic function with 1 method)
+
+julia> M=GradientDescent(0.01)
+
+GradientDescent(0.01)
+
+julia> Gradient(M,f,∇f,4)
+
+3.84
+
+
+
+

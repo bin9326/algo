@@ -1,0 +1,183 @@
+#Implement quasi-Newton methods to find the local maxima.
+
+julia> f(x)=(x-3.14)^4
+
+f (generic function with 1 method)
+
+julia> df(x)=4*(x-3.14)^3
+
+df (generic function with 1 method)
+
+julia> fdf(x)=f(x),df(x)
+
+fdf (generic function with 1 method)
+
+julia> a=f(0)
+
+97.21171216000002
+
+julia> b=df(0)
+
+-123.83657600000001
+
+julia> using LineSearches
+
+julia> function step!(M::DFP, f, df, x)
+
+       Q, g = M.Q, df(x)
+
+       x′ =(Static())(f,df,fdf,9.0,a,b)
+
+       g′ = df(x′[2])
+
+       δ = x′[2] - x
+
+       γ = g′ - g
+
+       Q = Q[1] - Q[1]*γ*γ'*Q[1]/(γ*Q[1]*γ') + δ*δ'/(δ'*γ)
+
+       return x′
+
+       end
+
+step! (generic function with 1 method)
+
+julia> function g!(storage, x)
+
+       storage[1] = -2.0 * (1.0 - x[1]) - 400.0 * (x[2] - x[1]^2) * x[1]
+
+       storage[2] = 200.0 * (x[2] - x[1]^2)
+
+       end
+
+g! (generic function with 1 method)
+
+julia> function h!(storage, x)
+
+           storage[1, 1] = 2.0 - 400.0 * x[2] + 1200.0 * x[1]^2
+
+           storage[1, 2] = -400.0 * x[1]
+
+
+
+           storage[2, 1] = -400.0 * x[1]
+
+           storage[2, 2] = 200.0
+
+       end
+
+h! (generic function with 1 method)
+
+julia> using Optim
+
+julia> f(x) = (1.0 - x[1])^2 + 100.0 * (x[2] - x[1]^2)^2
+
+f (generic function with 1 method)
+
+julia> optimize(f, [0.0, 0.0], LBFGS())
+
+ * Status: success
+
+ * Candidate solution
+
+    Final objective value:     5.378388e-17
+
+ * Found with
+
+    Algorithm:     L-BFGS
+
+ * Convergence measures
+
+    |x - x'|               = 4.54e-11 ≰ 0.0e+00
+
+    |x - x'|/|x'|          = 4.54e-11 ≰ 0.0e+00
+
+    |f(x) - f(x')|         = 2.85e-19 ≰ 0.0e+00
+
+    |f(x) - f(x')|/|f(x')| = 5.30e-03 ≰ 0.0e+00
+
+    |g(x)|                 = 9.88e-14 ≤ 1.0e-08
+
+ * Work counters
+
+    Seconds run:   0  (vs limit Inf)
+
+    Iterations:    24
+
+    f(x) calls:    67
+
+    ∇f(x) calls:   67
+
+julia> optimize(f, g!, [0.0, 0.0], LBFGS())
+
+ * Status: success
+
+ * Candidate solution
+
+    Final objective value:     5.191703e-27
+
+ * Found with
+
+    Algorithm:     L-BFGS
+
+ * Convergence measures
+
+
+
+    |x - x'|               = 4.58e-11 ≰ 0.0e+00
+
+    |x - x'|/|x'|          = 4.58e-11 ≰ 0.0e+00
+
+    |f(x) - f(x')|         = 4.41e-19 ≰ 0.0e+00
+
+    |f(x) - f(x')|/|f(x')| = 8.50e+07 ≰ 0.0e+00
+
+    |g(x)|                 = 1.44e-13 ≤ 1.0e-08
+
+ * Work counters
+
+    Seconds run:   0  (vs limit Inf)
+
+    Iterations:    24
+
+    f(x) calls:    67
+
+    ∇f(x) calls:   67
+
+julia> optimize(f, g!, h!, [0.0, 0.0], LBFGS())
+
+ * Status: success
+
+ * Candidate solution
+
+    Final objective value:     5.191703e-27
+
+ * Found with
+
+    Algorithm:     L-BFGS
+
+ * Convergence measures
+
+    |x - x'|               = 4.58e-11 ≰ 0.0e+00
+
+    |x - x'|/|x'|          = 4.58e-11 ≰ 0.0e+00
+
+    |f(x) - f(x')|         = 4.41e-19 ≰ 0.0e+00
+
+    |f(x) - f(x')|/|f(x')| = 8.50e+07 ≰ 0.0e+00
+
+    |g(x)|                 = 1.44e-13 ≤ 1.0e-08
+
+ * Work counters
+
+    Seconds run:   0  (vs limit Inf)
+
+    Iterations:    24
+
+    f(x) calls:    67
+
+    ∇f(x) calls:   67
+
+
+
+
